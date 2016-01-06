@@ -1,0 +1,9 @@
+.choosen_tab{
+    background: black;
+    font-size: 16px;
+}
+
+.unselect_tab{
+    background: white;
+    font-size: 16px;
+}

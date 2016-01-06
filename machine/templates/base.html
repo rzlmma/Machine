@@ -1,0 +1,52 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orchid</title>
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-table.min.css' %}" rel="stylesheet">
+    <link rel="shortcut icon" href="/static/img/facio.ico" type="image/x-icon">
+    {% include 'link_css.html' %}
+    {% include 'head_script.html' %}
+    <script type="text/javascript" src="{% static 'js/test.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/JquerySession.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap-table.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.form.js' %}"></script>
+</head>
+
+<body>
+
+{% block innerscript %}
+    <script>
+        function ajaxclickload(obj_url) {
+            htmlobj=$.ajax({url:obj_url,async:false});
+            $("#main_content").html(htmlobj.responseText);}
+
+        $(document).ready(function(){
+            $(".menu-item").each(function(){
+                $(this).click(function(){
+                    ajaxclickload($(this).attr("value"));
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+
+<div id="wrapper">
+    {% include 'nav.html' %}
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom">
+            {% include 'nav_bar_header.html' %}
+        </div>
+        <div id="main_content" class="main_body">
+        </div>
+{#        {% include 'footer.html' %}#}
+    </div>
+</div>
+</body>
+{% include 'foot_script.html' %}
+</html>

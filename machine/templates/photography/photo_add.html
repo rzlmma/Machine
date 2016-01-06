@@ -1,0 +1,81 @@
+{% extends 'base_ajax.html' %}
+
+{% block content %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>发布照片</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <form method="post" id="photoForm" class="form-horizontal" action="">
+                            {% if error %}
+                                <div class="alert alert-warning text-center">{{ error }}</div>
+                            {% endif %}
+                            {% if msg %}
+                                <div class="alert alert-success text-center">{{ msg }}</div>
+                            {% endif %}
+                            <div class="form-group">
+                                <label for="photo_link" class="col-sm-2 control-label">链接<span class="red-fonts">*</span></label>
+                                <div class="col-sm-8">
+                                    <input id="photo_link" name="photo_link" placeholder="http://..." type="text" class="form-control" {% if error %}value="{{ photo_link }}" {% endif %}>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description" class="col-sm-2 control-label">描述</label>
+                                <div class="col-sm-8">
+                                    <input id="description" name="description" placeholder="description" type="text" class="form-control" {% if error %}value="{{ description }}" {% endif %}>
+                                </div>
+                            </div>
+
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button id="cancel_button" class="btn btn-white" type="button">取消</button>
+                                    <button id="submit_button" class="btn btn-primary" type="button">保存</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+
+function ajaxclickload(obj_url) {
+    htmlobj=$.ajax({url:obj_url,async:false});
+    $("#main_content").html(htmlobj.responseText);
+}
+
+ $("#submit_button").click(function () {
+    $.ajax({
+        cache: true,
+        type: "POST",
+        url: "/photography/photo_add",
+        data:$('#photoForm').serialize(),
+        async: false,
+        error: function(request) {
+            alert("出错！");
+        },
+        success: function(data) {
+            parent.$.colorbox.close();
+            ajaxclickload("/photography/photo_list");
+
+        }
+    });
+});
+
+$(document).ready(function() {
+    $('#cancel_button').click(function(){
+        parent.$.colorbox.close();
+        return false;
+    });
+});
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,61 @@
+{% load mytags %}
+{% load staticfiles %}
+<li class="nav-header" style="margin-top: -20px;">
+    <div class="dropdown profile-element" style="margin-left: 42px; height: 67px" >
+        <span>
+            {% if is_superuser == 1 %}
+                <img alt="image" class="img-circle" width="48" height="48" src="{% static 'img/superuser.png' %}" />
+            {% else %}
+                <img alt="image" class="img-circle" width="48" height="48" src="{% static 'img/user.png' %}" />
+            {% endif %}
+        </span>
+        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+            <span class="clear">
+                <span class="block m-t-xs">
+                    <strong class="font-bold">{{ session_username }}
+{#                        <span style="color: #8095a8; margin-left: 20px;">xxx</span>#}
+                    </strong>
+                </span>
+                <span class="text-muted text-xs block">
+{#                    {% if session_user_id != -1 %}{{ session_role_id | to_rolename }} <b class="caret"></b>{% endif %}#}
+                </span>
+            </span>
+        </a>
+        {% if session_user_id != -1 %}
+            <ul class="dropdown-menu animated fadeInRight m-t-xs" style="margin-top: 10px">
+                
+                <li href="#" value="/system/user_profile/{{ session_user_id }}" class="xx btn_ajax_item">个人信息</li>
+                <li href="#" value="/system/user_edit/{{ session_user_id }}" class="xx btn_ajax_item">修改信息</li>
+                <li class="divider"></li>
+                <li style="margin-left: 42px"><a href="/system/logout/">LogOut</a></li>
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="logo-element">
+        JS+
+    </div>
+</li>
+<script>
+
+    function ajaxclickload(obj_url) {
+        htmlobj=$.ajax({url:obj_url,async:false});
+        $("#main_content").html(htmlobj.responseText);
+    }
+
+    $(document).ready(function(){
+        $(".btn_ajax_item").each(function(){
+            $(this).click(function(){
+                ajaxclickload($(this).attr("value"));
+            });
+        });
+    });
+
+
+</script>
+
+<style>
+    .xx{padding: 10px 30px;}
+    .xx:hover{background-color: #e7e7e7}
+</style>
+

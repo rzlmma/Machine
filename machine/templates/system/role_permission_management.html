@@ -1,0 +1,140 @@
+{% extends 'base_ajax.html' %}
+{#{% load mytags %}#}
+{% block content %}
+{% include 'nav_cat_bar.html' %}
+
+{#<div>#}
+{#    <ul id="myTab" class="nav nav-tabs">#}
+{#        <li class="btn_ajax_item active" data-toggle="tab" value="/system/role_list"><a href="#">角色列表</a></li>#}
+{#        <li class="btn_ajax_item" data-toggle="tab" value="/system/role_permission_list"><a href="#">角色-权限</a></li>#}
+{#     </li>#}
+{#    </ul>#}
+{#</div>#}
+
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+                <div class="ibox-title">
+                    <h3> {{ role.name }}的权限管理 </h3>
+                    <span class="ID" role_id="{{ role.id }}"></span>
+                    <button id="submit_button" class="btn btn-primary" style="margin-left: 200px; margin-top: -56px; height: 26px; width: 40px; padding: 0px 0px;" type="button">保存</button>
+                </div>
+                <div class="ibox-content" style="width: 100%; ">
+                    <label>全选</label>
+                    <input type="checkbox" id="select_all" onclick="selectAll()"  name="select_all">
+                </div>
+                <div class="ibox-content" style="height: 200px;">
+                    <div >
+                        <span><h4> 已拥有：</h4></span>
+                        <ul>
+                        {% for permission in permission_selected_list %}
+                            <li class="text-center gradeX"  permission_id="{{ permission.id }}" style="float: left; margin-left: 40px; list-style-type:none;">
+                                <input type="checkbox" name="selected" checked="true" value="{{ permission.id }}">{{ permission.name }}
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox-content" style="height: 200px;">
+                    <div>
+                        <span><h4> 未拥有：</h4></span>
+                        <ul>
+                        {% for permission in permission_unselected_list %}
+                            <li class="text-center gradeX" role_id="{{ permission.id }}" style="float: left; margin-left: 40px; list-style-type:none;">
+                                <input type="checkbox" name="selected" value="{{ permission.id }}">{{ permission.name }}
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+
+        var check_array = [];
+        $('#del_btn').click(function(){
+            if (confirm("确定删除")) {
+                $(".gradeX input:checked").each(function() {check_array.push($(this).attr("value")) });
+                $(".gradeX input:checked").closest("tr").remove();
+                $.post("/juser/user_del_ajax/",
+                        {ids: check_array.join(",")},
+                        function(data){
+                            window.open("/juser/user_list/", "_self");
+                        }
+                )
+            }
+        });
+
+
+        var check_array = [];
+        $('#submit_button').click(function(){
+            $(".gradeX input:checked").each(function() {check_array.push($(this).attr("value")) });
+            var role_id = $('.ID').attr("role_id");
+            $.post("/system/role_permission_management/"+role_id,
+                    {permission_ids: check_array.join(",")},
+                    function(resp){
+                        if (resp["success"]) {
+                            ajaxclickload("/system/role_permission_management/"+role_id);
+                        }else {
+                            alert(resp["error"]);
+                        }
+                    }
+            )
+
+        });
+
+
+
+        function ajaxclickload(obj_url) {
+            htmlobj=$.ajax({url:obj_url,async:false});
+            $("#main_content").html(htmlobj.responseText);
+        }
+
+        $('.btn-delete').click(function () {
+            if (confirm("是否删除角色[" + $(this).attr("role_name") + "]")) {
+                var role_name = $(this).attr("role_name");
+                var item = $(this);
+                url = "/system/role_delete";
+                $.post(url, {role_name: role_name}, function (resp) {
+                    if (resp["success"]) {
+                        item.closest("tr").remove();
+                    }else {
+                        alert(resp["error"]);
+                    }
+                })
+            }
+        });
+
+        $('.btn-edit').click(function () {
+            var id = $(this).attr("id");
+            $.colorbox({
+                href: '/system/role_edit/'+id,
+                transition: 'none',
+                open: true, closeButton: false, width: 800, height: 660, top: "10%"
+            })
+        });
+
+
+
+        $('.popup_window_role').click(function(){
+            $.colorbox({
+                href:'/system/role_add',
+                transition:'none',
+                open:true, closeButton:false, width: 600, height:400, top:"10%"
+            })
+        });
+
+
+    });
+
+
+
+
+</script>
+
+{% endblock %}

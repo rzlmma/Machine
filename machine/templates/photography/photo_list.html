@@ -1,0 +1,158 @@
+{% extends 'base_ajax.html' %}
+{% load staticfiles %}
+{#{% load mytags %}#}
+{% block content %}
+
+
+
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-7 pull-left">
+        <div style="margin-top: -20px; margin-bottom: 20px"><li class="btn btn-sm btn-primary popup_window_photo" href="#">发布照片</li></div>
+{#        <div style="margin-top: -20px; margin-bottom: 20px"><li class="btn btn-sm btn-primary popup_window_remark" href="#">发表评论</li></div>#}
+
+        {% for photo in photo_list %}
+            <div>
+                <span>{{ photo.author }}发布于</span>
+                <span>{{ photo.upload_time }}</span>
+            </div>
+            <div>
+                <span>{{ photo.description }}</span>
+            </div>
+            <img src="{{ photo.photo_link }}" style="width:100%; height:100%" alt="" />
+            <div class="" style="">
+                <button type="button" data-value="" class="btn btn-link btn-favor open-comment  vote_tag active" photo_id="{{ photo.id }}" favor_cnt="{{ photo.favor_cnt }}">
+                  <i class="fa fa-thumbs-up"></i>
+                  <span>{{ photo.favor_cnt }}</span>
+                </button>
+
+                <button type="button" data-value="" class="btn btn-link btn-dislike open-comment  vote_tag" photo_id="{{ photo.id }}" favor_cnt="{{ photo.favor_cnt }}">
+                    <i class="fa fa-thumbs-down" photo_id="{{ photo.id }}" dislike_cnt="{{ photo.dislike_cnt }}"></i>
+                    <span>{{ photo.dislike_cnt }}</span>
+                </button>
+            </div>
+            <div class="hr-line-dashed" style="width: 100%;"></div>
+        {% endfor %}
+
+        </div>
+        <div class="col-lg-5 pull-right">
+            <div>评论</div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+
+    $(document).ready(function(){
+
+        var check_array = [];
+        $('#del_btn').click(function(){
+            if (confirm("确定删除")) {
+                $(".gradeX input:checked").each(function() {check_array.push($(this).attr("value")) });
+                $(".gradeX input:checked").closest("tr").remove();
+                url = "/system/role_delete";
+                $.post(url, {role_ids: check_array.join(",")}, function(resp){
+                    if (resp["success"]) {
+                        item.closest("tr").remove();
+                    }else {
+                        alert(resp["error"]);
+                    }
+                 })
+            }
+        });
+
+        function ajaxclickload(obj_url) {
+            htmlobj=$.ajax({url:obj_url,async:false});
+            $("#main_content").html(htmlobj.responseText);
+        }
+
+        $('.btn-delete').click(function () {
+            if (confirm("是否删除角色[" + $(this).attr("role_name") + "]")) {
+                var role_name = $(this).attr("role_name");
+                var item = $(this);
+                url = "/system/role_delete";
+                $.post(url, {role_name: role_name}, function (resp) {
+                    if (resp["success"]) {
+                        item.closest("tr").remove();
+                    }else {
+                        alert(resp["error"]);
+                    }
+                })
+            }
+        });
+
+
+        $('.btn-favor').click(function () {
+            var flag = "vote_favor";
+            var photo_id = $(this).attr("photo_id");
+            var favor_cnt = $(this).attr("favor_cnt");
+            url = "/photography/photo_vote";
+            $.post(url, {flag: flag, photo_id: photo_id, favor_cnt: favor_cnt}, function (resp) {
+                ajaxclickload("/photography/photo_list");
+            })
+
+        });
+
+        $('.btn-dislike').click(function () {
+            var flag = "vote_dislike";
+            var photo_id = $(this).attr("photo_id");
+            var dislike_cnt = $(this).attr("dislike_cnt");
+            url = "/photography/photo_vote";
+            $.post(url, {flag: flag, photo_id: photo_id, dislike_cnt: dislike_cnt}, function (resp) {
+                ajaxclickload("/photography/photo_list");
+            })
+
+        });
+
+
+        $('.btn-edit').click(function () {
+            var id = $(this).attr("id");
+            $.colorbox({
+                href: '/system/role_edit/'+id,
+                transition: 'none',
+                open: true, closeButton: false, width: 800, height: 300, top: "10%"
+            })
+        });
+
+        $(document).ready(function(){
+            $(".btn_ajax_item").each(function(){
+                $(this).click(function(){
+                    ajaxclickload($(this).attr("value"));
+                });
+            });
+        });
+
+        $('.popup_window_photo').click(function(){
+            $.colorbox({
+                href:'/photography/photo_add',
+                transition:'none',
+                open:true, closeButton:false, width: 600, height:280, top:"10%"
+            })
+        });
+
+
+        $('.popup_window_remark').click(function(){
+            $.colorbox({
+                href:'/photography/remark_add',
+                transition:'none',
+                open:true, closeButton:false, width: 600, height:280, top:"10%"
+            })
+        });
+
+
+    });
+
+
+</script>
+
+<style type="text/css">
+
+</style>
+
+{% endblock %}

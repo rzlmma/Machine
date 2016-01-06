@@ -1,0 +1,105 @@
+{% extends 'base_ajax.html' %}
+
+{% block content %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>添加权限</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <form method="post" id="permissionForm" class="form-horizontal" action="">
+                            {% if error %}
+                                <div class="alert alert-warning text-center">{{ error }}</div>
+                            {% endif %}
+                            {% if msg %}
+                                <div class="alert alert-success text-center">{{ msg }}</div>
+                            {% endif %}
+                            <div class="form-group">
+                                <label for="permissionName" class="col-sm-2 control-label">权限名<span class="red-fonts">*</span></label>
+                                <div class="col-sm-8">
+                                    <input id="permission_name" name="permission_name" placeholder="name" type="text" class="form-control" {% if error %}value="{{ permission_name }}" {% endif %}>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="codename" class="col-sm-2 control-label">代号<span class="red-fonts">*</span></label>
+                                <div class="col-sm-8">
+                                    <input id="permission_codename" name="permission_codename" placeholder="codename" type="text" class="form-control" {% if error %}value="{{ permission_codename }}" {% endif %}>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button id="cancel_button" class="btn btn-white" type="button">取消</button>
+                                    <button id="submit_button" class="btn btn-primary" type="button">保存</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+$('#permissionForm').validator({
+    timely: 2,
+    theme: "yellow_right_effect",
+    rules: {
+
+    },
+    fields: {
+        "permission_name": {
+            rule: "required",
+            tip: "输入权限名",
+            ok: "",
+            msg: {required: "必须填写!"}
+        },
+        "permission_codename": {
+            rule: "required",
+            tip: "输入权限代号",
+            ok: "",
+            msg: {required: "必须填写!"}
+        },
+    },
+    valid: function(form) {
+        form.submit();
+    }
+});
+
+function ajaxclickload(obj_url) {
+    htmlobj=$.ajax({url:obj_url,async:false});
+    $("#main_content").html(htmlobj.responseText);
+}
+
+ $("#submit_button").click(function () {
+    $.ajax({
+        cache: true,
+        type: "POST",
+        url: "/system/permission_add",
+        data:$('#permissionForm').serialize(),
+        async: false,
+        error: function(request) {
+            alert(request);
+        },
+        success: function(data) {
+            parent.$.colorbox.close();
+            ajaxclickload("/system/permission_list/1");
+
+        }
+    });
+})
+
+
+$(document).ready(function() {
+    $('#cancel_button').click(function(){
+        parent.$.colorbox.close();
+        return false;
+    });
+});
+
+</script>
+
+
+{% endblock %}

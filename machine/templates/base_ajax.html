@@ -1,0 +1,49 @@
+{% load staticfiles %}
+
+<div class="panel-body child_main_body">
+    <div class="container-fluid">
+        <div class="row" style="padding: 10px 6px 0px;">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block commonScript %}
+    <script>
+        function ajaxclickload(obj_url) {
+            htmlobj=$.ajax({url:obj_url,async:false});
+            $("#main_content").html(htmlobj.responseText);
+        }
+
+        $(document).ready(function(){
+            $(".btn_ajax_item").each(function(){
+                $(this).click(function(){
+                    ajaxclickload($(this).attr("value"));
+                });
+            });
+        });
+
+        $('.changepage').click(function(){
+            var url2='customer/customer_table_ajax?'+getqueryStr()+'&page='+$(this).val();
+            htmlobj_table_ajax= $.ajax({url: url2, async:false});
+            $('#table_customer_ajax').html(htmlobj_table_ajax.responseText);
+        });
+
+        $('.pop_html').click(function(){
+            $.colorbox({href:$(this).attr('name'),
+            transition:'none',
+            closeButton:false, width: 500, height:350, initialWidth: 500, initialHeight: 350, top:"15%"})
+        });
+
+        $('.2layerajax').click(function(){
+            htmlobj_customer_subaccount=$.ajax({url: $(this).attr('name'), async:false});
+            $('#table_customer_ajax').html(htmlobj_customer_subaccount.responseText);
+        });
+
+    </script>
+{% endblock %}
+{% block pageScript %}
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends 'base_ajax.html' %}
+{% load staticfiles %}
+{#{% load mytags %}#}
+{% block content %}
+{% include 'nav_cat_bar.html' %}
+
+{#<div>#}
+{#    <ul id="myTab" class="nav nav-tabs">#}
+{#        <li class="btn_ajax_item active" data-toggle="tab" value="/system/user_list"><a href="#">用户</a></li>#}
+{#        <li class="btn_ajax_item" data-toggle="tab" value="/system/user_role_list"><a href="#">(用户-角色)关系</a></li>#}
+{#     </li>#}
+{#    </ul>#}
+{#</div>#}
+
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5> 查看用户 </h5>
+                </div>
+
+                <div class="ibox-content">
+                    <div class="">
+                        <li class="btn btn-sm btn-primary popup_window" value="/system/user_add" href="#">添加用户</li>
+                        <a id="del_btn" class="btn btn-sm btn-danger"> 删除所选 </a>
+{#                        <form id="search_form" method="post" action="" class="pull-right mail-search">#}
+                            <div class="input-group pull-right mail-search" id="search_form">
+                                <input type="text" class="form-control input-sm" id="search_input" name="keyword" placeholder="Search">
+                                <div class="input-group-btn">
+                                    <button id='search_btn' class="btn btn-sm btn-primary">
+                                        Search
+                                    </button>
+                                </div>
+                            </div>
+{#                        </form>#}
+                    </div>
+
+                    <table class="table table-striped table-bordered table-hover " id="editable" >
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    <input type="checkbox" id="select_all" onclick="selectAll()"  name="select_all">
+                                </th>
+                                <th class="text-center">用户名</th>
+                                <th class="text-center">姓名</th>
+                                <th class="text-center">性别</th>
+                                <th class="text-center">手机号</th>
+                                <th class="text-center">固定电话</th>
+                                <th class="text-center">邮箱</th>
+                                <th class="text-center">部门</th>
+                                <th class="text-center">职位</th>
+                                <th class="text-center">状态</th>
+{#                                <th class="text-center">创建时间</th>#}
+                                <th class="text-center">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in user_list %}
+                            <tr class="gradeX">
+                                <td class="text-center">
+                                    <input type="checkbox" name="selected" value="{{ user.id }}">
+                                </td>
+                                <td class="text-center btn_ajax_item username_link" value="/system/user_profile/{{ user.id }}">{{ user.username }}</td>
+                                <td class="text-center">{{ user.real_name}}</td>
+                                <td class="text-center">{{ user.gender }}</td>
+                                <td class="text-center">{{ user.mobile }}</td>
+                                <td class="text-center">{{ user.phone }}</td>
+                                <td class="text-center">{{ user.email }}</td>
+                                <td class="text-center">{{ user.department }}</td>
+                                <td class="text-center">{{ user.position }}</td>
+                                <td class="text-center">{{ user.status }}</td>
+{#                                <td class="text-center">{{ user.date_joined }}</td>#}
+                                <td class="text-center">
+                                    <li href="#" value="/system/user_profile/{{ user.id }}" class="btn btn-xs btn-primary btn_ajax_item" id="main_content" >详情</li>
+                                    <li href="#" value="/system/user_role_management/{{ user.id }}" class="btn btn-xs btn-primary btn_ajax_item" id="main_content" >角色</li>
+                                    <span id="{{ user.id }}" class="btn btn-xs btn-info btn-edit">编辑</span>
+                                    <span user_name="{{ user.username }}" id="{{ user.id }}" class="btn btn-xs btn-danger btn-delete">删除</span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <div class="dataTables_info" id="editable_info" role="status" aria-live="polite">
+                                此页显示 {{ user_list.start_index }} 到 {{ user_list.end_index }}， 共有 {{ paginator.count }} 用户
+                            </div>
+                        </div>
+                        <div class="col-sm-4" style="margin-top: -26px;">
+                            <nav class="pull-right">
+                                <ul class="pagination">
+                                    <li>
+                                        {% if not user_list.has_previous %}
+                                            <li class="disabled changepage"><a aria-label="Previous"><span aria-hidden="true">上一页</span></a></li>
+                                        {% else %}
+                                            <li class="changepage btn_ajax_item" value="/system/user_list/{{ user_list.previous_page_number }}"><a aria-label="Previous"><span aria-hidden="true">上一页</span></a></li>
+                                        {% endif %}
+                                        {% for page in user_list.paginator.page_range %}
+                                            {% if page == user_list.number %}
+                                                <li class="active changepage" value='{{ page }}'><span>{{ page }}</span></li>
+                                            {% else %}
+                                                <li class="changepage btn_ajax_item" value="/system/user_list/{{ page }}"><a class='paginator' title='{{ page }}'><span>{{ page }}</span></a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if not user_list.has_next %}
+                                            <li class="disabled changepage"><a aria-label="Next"><span aria-hidden="true">下一页</span></a></li>
+                                        {% else %}
+                                            <li class="changepage btn_ajax_item" value="/system/user_list/{{ user_list.next_page_number }}"><a aria-label="Next"><span aria-hidden="true">下一页</span></a></li>
+                                        {% endif %}
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+    $(document).ready(function() {
+
+        function ajaxclickload(obj_url) {
+            htmlobj=$.ajax({url:obj_url,async:false});
+            $("#main_content").html(htmlobj.responseText);
+        }
+
+        $(document).ready(function(){
+            $(".btn_ajax_item").each(function(){
+                $(this).click(function(){
+                    ajaxclickload($(this).attr("value"));
+                });
+            });
+        });
+
+
+        var check_array = [];
+        $('#del_btn').click(function(){
+            if (confirm("确定删除")) {
+                $(".gradeX input:checked").each(function() {check_array.push($(this).attr("value")) });
+                alert(check_array)
+                $(".gradeX input:checked").closest("tr").remove();
+                url = "/system/user_delete";
+                $.post(url, {user_ids: check_array.join(",")}, function(resp){
+                    if (resp["success"]) {
+                        item.closest("tr").remove();
+                    }else {
+                        alert(resp["error"]);
+                    }
+                 })
+            }
+        });
+{##}
+{##}
+        $('#search_btn').click(function(){
+            var keyword = $("#search_input").val();
+            alert(keyword)
+            url = "/system/user_search/";
+            $.post(url, {keyword: keyword}, function(resp){
+                if (resp["success"]) {
+
+                }else {
+
+                }
+             })
+        });
+
+
+{#        $("#search_btn").click(function () {#}
+{#            var k = $("#search_input").val();#}
+{#            alert(k);#}
+{#            $.ajax({#}
+{#                cache: true,#}
+{#                type: "POST",#}
+{#                url: "/system/user_search/",#}
+{#                data: {k: k},#}
+{#                async: false,#}
+{#                error: function(request) {#}
+{#                    alert("Connection error");#}
+{#                },#}
+{#                success: function(data) {#}
+{#                    parent.$.colorbox.close();#}
+{#                    ajaxclickload("/system/user_list");#}
+{##}
+{#                }#}
+{#            });#}
+{#        });#}
+
+
+        $('.btn-delete').click(function () {
+            if (confirm("是否删除用户[" + $(this).attr("user_name") + "]")) {
+                var id = $(this).attr("id");
+                var item = $(this);
+                url = "/system/user_delete";
+                $.post(url, {id: id}, function (resp) {
+                    if (resp["success"]) {
+                        item.closest("tr").remove();
+                    } else {
+                        alert(resp["error"]);
+                    }
+                })
+            }
+        });
+
+
+        $('.btn-edit').click(function () {
+            var id = $(this).attr("id");
+            $.colorbox({
+                href: '/system/user_edit/'+id,
+                transition: 'none',
+                open: true, closeButton: false, width: 800, height: 660, top: "10%"
+            })
+        });
+
+
+        $('.popup_window').click(function () {
+            $.colorbox({
+                href: '/system/user_add',
+                transition: 'none',
+                open: true, closeButton: false, width: 800, height: 660, top: "10%"
+            })
+        });
+
+    });
+</script>
+
+<style type="text/css">
+.username_link {color: #1ab394; font-weight: 500}
+.username_link:hover {color: red; text-decoration: underline;}
+</style>
+
+{% endblock %}
